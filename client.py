@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import filedialog
 import socket
 import threading
 
@@ -45,6 +46,14 @@ class Crypt:
         return result
 
 
+def browseFiles():
+    filename = filedialog.askopenfilename(initialdir = "/",
+                                          title = "Select a File",
+                                          filetypes = (("Text files",
+                                                        "*.txt*"),
+                                                       ("all files",
+                                                        "*.*")))
+
 # seção de interface gráfica===================
 class Application(threading.Thread):
     def __init__(self, master=None):
@@ -53,7 +62,7 @@ class Application(threading.Thread):
         canvas = tk.Canvas(root, height=500, width=500)
         canvas.pack()
         self.create_interface()
-        root.iconbitmap('iconchat.ico')
+        #root.iconbitmap('iconchat.ico')
 
     def create_interface(self):
         # seção de saída-------------------
@@ -81,7 +90,16 @@ class Application(threading.Thread):
 
         button = tk.Button(frame_input, text='Enviar', bg='#696969', fg='black',
                            font=40, command=lambda: self.send_message(message.get(), username.get()))
-        button.place(relx=0.74, rely=0.35, relwidth=0.25, relheight=0.62)
+        button.place(relx=0.74, rely=0.55, relwidth=0.25, relheight=0.42)
+
+        """ button2 = tk.Button(frame_input, text='Anexar', bg='#696969', fg='black',
+                           font=40, command=lambda: self.send_message(message.get(), username.get()))
+        button2.place(relx=0.74, rely=0.100, relwidth=0.25, relheight=0.42) """
+
+        button_explore = tk.Button(frame_input,
+                        text = "Browse Files",
+                        command = browseFiles)
+        button_explore.place(relx=0.74, rely=0.100, relwidth=0.25, relheight=0.42)
 
         scrollbarH = tk.Scrollbar(frame_output, orient="horizontal")
         scrollbarH.config(command=self.label.xview)
@@ -101,6 +119,7 @@ class Application(threading.Thread):
         tcp.send(crypt.encrypt().encode('utf-8'))        
         self.label.insert(tk.END, f'{nick.strip()}: {message.strip()}')
         self.label.see(tk.END)
+    
     def run(self):
         receive_messages(self.label)
 
